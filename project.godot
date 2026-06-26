@@ -40,6 +40,8 @@ move_right={
 
 [autoload]
 
+SaveManager="*res://scripts/core/save_manager.gd"
+SteamManager="*res://scripts/core/steam_manager.gd"
 CultivationManager="*res://scripts/cultivation/cultivation_manager.gd"
 ObjectPooler="*res://scripts/pooling/object_pooler.gd"
 
