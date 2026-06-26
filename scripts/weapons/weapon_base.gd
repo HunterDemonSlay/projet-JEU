@@ -20,6 +20,11 @@ extends Node2D
 ## Portée maximale de détection de l'ennemi le plus proche.
 @export var targeting_range: float = 500.0
 
+## Émis juste avant chaque attaque réelle (cible trouvée). Découple les
+## effets cosmétiques (animation de cast, VFX, son) de la logique de combat :
+## ni WeaponBase ni ses classes filles n'ont besoin de savoir qui écoute.
+signal attack_performed
+
 var _attack_timer: Timer
 
 
@@ -37,6 +42,7 @@ func _on_attack_timer_timeout() -> void:
 		return
 
 	look_at(target.global_position)
+	attack_performed.emit()
 	_perform_attack(target)
 
 
