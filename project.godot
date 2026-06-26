@@ -37,6 +37,10 @@ move_right={
 ]
 }
 
+[autoload]
+
+CultivationManager="*res://scripts/cultivation/cultivation_manager.gd"
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"

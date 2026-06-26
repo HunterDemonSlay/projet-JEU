@@ -7,6 +7,10 @@ extends CharacterBody2D
 ## vitesse, attraction) sont déléguées à la Resource `CultivationStats`
 ## pour rester découplées de la logique de mouvement.
 
+## Émis quand le Qi atteint son maximum : déclenche une percée de Cultivation
+## (écouté par CultivationManager pour proposer un choix d'amélioration).
+signal breakthrough_reached
+
 @export_group("Mouvement")
 ## Vitesse de déplacement maximale, en pixels/seconde.
 @export var max_speed: float = 300.0
@@ -29,12 +33,36 @@ func _ready() -> void:
 	# sans dépendance directe ni recherche par chemin de scène.
 	add_to_group("player")
 	_update_pickup_radius()
+	pickup_area.area_entered.connect(_on_pickup_area_entered)
+
+
+func _process(delta: float) -> void:
+	if stats.qi_regen_rate > 0.0:
+		add_qi(stats.qi_regen_rate * delta)
 
 
 func _physics_process(delta: float) -> void:
 	var input_direction := _get_input_direction()
 	velocity = _compute_velocity(velocity, input_direction, delta)
 	move_and_slide()
+
+
+## Ajoute du Qi et déclenche une percée (breakthrough) si le maximum est atteint.
+## Le palier suivant demande un peu plus de Qi, pour une courbe de progression
+## qui ralentit naturellement (comme la montée en Royaume dans le Murim).
+func add_qi(amount: float) -> void:
+	stats.restore_qi(amount)
+	if stats.qi >= stats.max_qi:
+		stats.qi = 0.0
+		stats.max_qi *= 1.2
+		breakthrough_reached.emit()
+
+
+## Appelé quand un objet (typiquement un QiOrb) entre dans le rayon d'attraction.
+## Démarre son vol vers le joueur ; QiOrb gère lui-même sa propre attraction.
+func _on_pickup_area_entered(area: Area2D) -> void:
+	if area.has_method("start_attraction"):
+		area.start_attraction(self)
 
 
 ## Lit les actions d'input (ZQSD / flèches) et retourne un vecteur normalisé.
