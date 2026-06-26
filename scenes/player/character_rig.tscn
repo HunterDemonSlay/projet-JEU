@@ -1,0 +1,138 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/resonant_fabric.gd" id="1"]
+
+[sub_resource type="PlaceholderTexture2D" id="Tex_torso"]
+size = Vector2(24, 40)
+
+[sub_resource type="PlaceholderTexture2D" id="Tex_head"]
+size = Vector2(16, 16)
+
+[sub_resource type="PlaceholderTexture2D" id="Tex_hair"]
+size = Vector2(10, 30)
+
+[sub_resource type="PlaceholderTexture2D" id="Tex_arm_upper"]
+size = Vector2(6, 16)
+
+[sub_resource type="PlaceholderTexture2D" id="Tex_arm_lower"]
+size = Vector2(6, 16)
+
+[sub_resource type="PlaceholderTexture2D" id="Tex_hand"]
+size = Vector2(6, 6)
+
+[sub_resource type="PlaceholderTexture2D" id="Tex_sword"]
+size = Vector2(4, 30)
+
+[sub_resource type="PlaceholderTexture2D" id="Tex_leg_upper"]
+size = Vector2(7, 18)
+
+[sub_resource type="PlaceholderTexture2D" id="Tex_leg_lower"]
+size = Vector2(7, 18)
+
+[sub_resource type="PlaceholderTexture2D" id="Tex_robe_tail"]
+size = Vector2(14, 34)
+
+[node name="CharacterRig" type="Node2D"]
+
+[node name="Torso" type="Sprite2D" parent="."]
+position = Vector2(0, -20)
+texture = SubResource("Tex_torso")
+offset = Vector2(0, -20)
+
+[node name="Head" type="Node2D" parent="Torso"]
+position = Vector2(0, -38)
+
+[node name="HeadSprite" type="Sprite2D" parent="Torso/Head"]
+texture = SubResource("Tex_head")
+offset = Vector2(0, -8)
+
+[node name="Hair" type="Node2D" parent="Torso/Head"]
+position = Vector2(0, -4)
+script = ExtResource("1")
+idle_sway_amplitude_deg = 5.0
+velocity_sway_amplitude_deg = 18.0
+
+[node name="HairSprite" type="Sprite2D" parent="Torso/Head/Hair"]
+texture = SubResource("Tex_hair")
+offset = Vector2(0, 12)
+
+[node name="ArmUpperBack" type="Node2D" parent="Torso"]
+position = Vector2(-8, -30)
+
+[node name="ArmUpperBackSprite" type="Sprite2D" parent="Torso/ArmUpperBack"]
+texture = SubResource("Tex_arm_upper")
+offset = Vector2(0, 8)
+
+[node name="ArmLowerBack" type="Node2D" parent="Torso/ArmUpperBack"]
+position = Vector2(0, 16)
+
+[node name="ArmLowerBackSprite" type="Sprite2D" parent="Torso/ArmUpperBack/ArmLowerBack"]
+texture = SubResource("Tex_arm_lower")
+offset = Vector2(0, 8)
+
+[node name="ArmUpperFront" type="Node2D" parent="Torso"]
+position = Vector2(8, -30)
+
+[node name="ArmUpperFrontSprite" type="Sprite2D" parent="Torso/ArmUpperFront"]
+texture = SubResource("Tex_arm_upper")
+offset = Vector2(0, 8)
+
+[node name="ArmLowerFront" type="Node2D" parent="Torso/ArmUpperFront"]
+position = Vector2(0, 16)
+
+[node name="ArmLowerFrontSprite" type="Sprite2D" parent="Torso/ArmUpperFront/ArmLowerFront"]
+texture = SubResource("Tex_arm_lower")
+offset = Vector2(0, 8)
+
+[node name="Hand" type="Node2D" parent="Torso/ArmUpperFront/ArmLowerFront"]
+position = Vector2(0, 16)
+
+[node name="HandSprite" type="Sprite2D" parent="Torso/ArmUpperFront/ArmLowerFront/Hand"]
+texture = SubResource("Tex_hand")
+offset = Vector2(0, 3)
+
+[node name="Sword" type="Node2D" parent="Torso/ArmUpperFront/ArmLowerFront/Hand"]
+position = Vector2(3, 0)
+
+[node name="SwordSprite" type="Sprite2D" parent="Torso/ArmUpperFront/ArmLowerFront/Hand/Sword"]
+texture = SubResource("Tex_sword")
+offset = Vector2(0, -15)
+
+[node name="LegUpperBack" type="Node2D" parent="Torso"]
+position = Vector2(-5, 0)
+
+[node name="LegUpperBackSprite" type="Sprite2D" parent="Torso/LegUpperBack"]
+texture = SubResource("Tex_leg_upper")
+offset = Vector2(0, 9)
+
+[node name="LegLowerBack" type="Node2D" parent="Torso/LegUpperBack"]
+position = Vector2(0, 18)
+
+[node name="LegLowerBackSprite" type="Sprite2D" parent="Torso/LegUpperBack/LegLowerBack"]
+texture = SubResource("Tex_leg_lower")
+offset = Vector2(0, 9)
+
+[node name="LegUpperFront" type="Node2D" parent="Torso"]
+position = Vector2(5, 0)
+
+[node name="LegUpperFrontSprite" type="Sprite2D" parent="Torso/LegUpperFront"]
+texture = SubResource("Tex_leg_upper")
+offset = Vector2(0, 9)
+
+[node name="LegLowerFront" type="Node2D" parent="Torso/LegUpperFront"]
+position = Vector2(0, 18)
+
+[node name="LegLowerFrontSprite" type="Sprite2D" parent="Torso/LegUpperFront/LegLowerFront"]
+texture = SubResource("Tex_leg_lower")
+offset = Vector2(0, 9)
+
+[node name="RobeTail" type="Node2D" parent="Torso"]
+position = Vector2(0, -2)
+script = ExtResource("1")
+idle_sway_amplitude_deg = 10.0
+velocity_sway_amplitude_deg = 30.0
+spring_responsiveness = 4.0
+
+[node name="RobeTailSprite" type="Sprite2D" parent="Torso/RobeTail"]
+texture = SubResource("Tex_robe_tail")
+offset = Vector2(0, 17)
