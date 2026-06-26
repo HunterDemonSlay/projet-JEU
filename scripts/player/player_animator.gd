@@ -2,11 +2,16 @@ extends AnimationPlayer
 ## Pilote les transitions entre les états d'animation du joueur : Idle, Run
 ## (cheveux/robe qui volent), et QiStrike_Cast (attaque, non interruptible).
 ##
-## Les clips n'existent pas encore (le personnage n'a qu'un sprite
-## placeholder) : chaque appel à play() est protégé par has_animation(), donc
-## ce script ne provoque aucune erreur tant que l'art définitif n'est pas
-## prêt, et fonctionnera tel quel dès que les animations "Idle"/"Run"/
-## "QiStrike_Cast" seront ajoutées à l'AnimationPlayer.
+## Le personnage utilise désormais une illustration HD unique (PlayerSprite)
+## à la place du rig articulé (CharacterRig, masqué) : il n'y a plus de
+## squelette/spritesheet à piloter par images-clés. enable_body_animations
+## court-circuite donc tout _process()/play() lié au corps, indépendamment de
+## has_animation() (qui reste en place comme garde-fou en profondeur). Le
+## déclenchement de la traînée d'épée (SwordTrail), lui, continue de
+## fonctionner : il ne dépend d'aucun clip d'AnimationPlayer.
+## Repassez ce flag à true le jour où vous remplacez l'illustration unique
+## par un spritesheet animé et créez les clips Idle/Run/QiStrike_Cast.
+@export var enable_body_animations: bool = false
 
 const ANIM_IDLE := "Idle"
 const ANIM_RUN := "Run"
@@ -38,7 +43,7 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	if _is_casting:
+	if not enable_body_animations or _is_casting:
 		return
 
 	var target_animation := ANIM_RUN if _player.velocity.length() > RUN_SPEED_THRESHOLD else ANIM_IDLE
@@ -47,7 +52,7 @@ func _process(_delta: float) -> void:
 
 
 func _on_attack_performed() -> void:
-	if not has_animation(ANIM_ATTACK):
+	if not enable_body_animations or not has_animation(ANIM_ATTACK):
 		return
 	_is_casting = true
 	play(ANIM_ATTACK)

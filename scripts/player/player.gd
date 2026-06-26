@@ -31,6 +31,20 @@ signal died
 ## Statistiques du joueur (Qi, vie, vitesse, attraction). Voir CultivationStats.
 @export var stats: CultivationStats = CultivationStats.new()
 
+@export_group("Habillage")
+## Position du Marker2D SwordTip (pointe d'épée pour la traînée de combat),
+## relative à PlayerSprite. Ajustable au pixel près depuis l'inspecteur sans
+## toucher au code, tant qu'on n'édite pas la scène dans l'éditeur visuel.
+@export var sword_tip_offset: Vector2 = Vector2(100, -50):
+	set(value):
+		sword_tip_offset = value
+		if sword_tip != null:
+			sword_tip.position = value
+
+## Chemin de l'illustration HD unique. Chargée automatiquement si présente ;
+## sinon le PlaceholderTexture2D de la scène reste affiché (aucune erreur).
+const PLAYER_SPRITE_PATH := "res://assets/player/player_sprite.jpg"
+
 ## Référence à la zone de ramassage, dont le rayon suit `stats.pickup_radius`.
 @onready var pickup_area: Area2D = $PickupArea
 @onready var pickup_shape: CollisionShape2D = $PickupArea/CollisionShape2D
@@ -38,6 +52,10 @@ signal died
 ## Pétales de fleurs de prunier qui se détachent du personnage en mouvement
 ## (esthétique manhwa). Purement visuel : aucune incidence sur le gameplay.
 @onready var plum_blossom_particles: GPUParticles2D = $PlumBlossomParticles
+## Illustration HD unique qui remplace le rig cut-out (CharacterRig, masqué).
+@onready var player_sprite: Sprite2D = $PlayerSprite
+## Pointe de l'épée, suivie par SwordTrail pour dessiner la traînée de combat.
+@onready var sword_tip: Marker2D = $PlayerSprite/SwordTip
 
 ## Vitesse minimale (px/s) à partir de laquelle les pétales se détachent.
 const PETAL_EMIT_SPEED_THRESHOLD := 10.0
@@ -59,6 +77,14 @@ func _ready() -> void:
 	hurtbox.add_to_group("player_hurtbox")
 	_update_pickup_radius()
 	pickup_area.area_entered.connect(_on_pickup_area_entered)
+
+	# Réapplique l'offset maintenant que sword_tip (@onready) est résolu : le
+	# setter de sword_tip_offset s'exécute aussi avant _ready() (à la
+	# construction, avec sa valeur par défaut), trop tôt pour toucher au nœud.
+	sword_tip.position = sword_tip_offset
+
+	if ResourceLoader.exists(PLAYER_SPRITE_PATH):
+		player_sprite.texture = load(PLAYER_SPRITE_PATH)
 
 
 func _process(delta: float) -> void:
