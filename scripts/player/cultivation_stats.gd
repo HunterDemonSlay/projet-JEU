@@ -26,6 +26,23 @@ extends Resource
 ## Régénération passive de Qi, en points par seconde.
 @export var qi_regen_rate: float = 0.0
 
+## Noms des Royaumes de Cultivation, dans l'ordre de progression.
+@export var realm_names: PackedStringArray = [
+	"Mortel",
+	"Ouverture des Méridiens",
+	"Fondation du Qi",
+	"Cœur Vaillant",
+	"Esprit Immuable",
+]
+## Index du Royaume actuel dans `realm_names` (avance d'une percée à l'autre).
+@export var current_realm_index: int = 0
+
+
+## Nom du Royaume actuel, sans jamais sortir des bornes de `realm_names`.
+func get_realm_name() -> String:
+	var index := clampi(current_realm_index, 0, realm_names.size() - 1)
+	return realm_names[index]
+
 
 func is_alive() -> bool:
 	return health > 0.0
