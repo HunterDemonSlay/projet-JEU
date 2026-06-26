@@ -1,7 +1,6 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/resonant_fabric.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/player/sword_trail.gd" id="2"]
 
 [sub_resource type="PlaceholderTexture2D" id="Tex_torso"]
 size = Vector2(24, 40)
@@ -98,14 +97,6 @@ position = Vector2(3, 0)
 [node name="SwordSprite" type="Sprite2D" parent="Torso/ArmUpperFront/ArmLowerFront/Hand/Sword"]
 texture = SubResource("Tex_sword")
 offset = Vector2(0, -15)
-
-[node name="SwordTip" type="Marker2D" parent="Torso/ArmUpperFront/ArmLowerFront/Hand/Sword"]
-position = Vector2(0, -30)
-
-[node name="SwordTrail" type="Line2D" parent="Torso/ArmUpperFront/ArmLowerFront/Hand/Sword"]
-width = 10.0
-tip_marker = NodePath("../SwordTip")
-script = ExtResource("2")
 
 [node name="LegUpperBack" type="Node2D" parent="Torso"]
 position = Vector2(-5, 0)
