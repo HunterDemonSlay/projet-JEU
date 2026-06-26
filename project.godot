@@ -41,6 +41,7 @@ move_right={
 [autoload]
 
 CultivationManager="*res://scripts/cultivation/cultivation_manager.gd"
+ObjectPooler="*res://scripts/pooling/object_pooler.gd"
 
 [rendering]
 
