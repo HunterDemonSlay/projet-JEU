@@ -34,6 +34,11 @@ signal died
 ## Référence à la zone de ramassage, dont le rayon suit `stats.pickup_radius`.
 @onready var pickup_area: Area2D = $PickupArea
 @onready var pickup_shape: CollisionShape2D = $PickupArea/CollisionShape2D
+@onready var hurtbox: Area2D = $Hurtbox
+
+## Pierres d'Esprit accumulées pendant cette run (non encore persistées).
+## Voir World._on_player_died(), qui les crédite à SaveManager à la mort.
+var session_spirit_stones: int = 0
 
 var _is_dead: bool = false
 
@@ -42,6 +47,10 @@ func _ready() -> void:
 	# Permet aux ennemis de retrouver le joueur via get_first_node_in_group(),
 	# sans dépendance directe ni recherche par chemin de scène.
 	add_to_group("player")
+	# Déclarer un groupe via `groups = [...]` dans le .tscn ne fonctionne pas
+	# de façon fiable (constaté en testant le combat en conditions réelles :
+	# le groupe restait vide au runtime) ; add_to_group() en code est sûr.
+	hurtbox.add_to_group("player_hurtbox")
 	_update_pickup_radius()
 	pickup_area.area_entered.connect(_on_pickup_area_entered)
 
@@ -88,6 +97,11 @@ func take_damage_from_enemy(amount: float) -> void:
 	if not stats.is_alive():
 		_is_dead = true
 		died.emit()
+
+
+## Appelé par un ennemi à sa mort (voir Enemy._grant_spirit_stones).
+func earn_spirit_stones(amount: int) -> void:
+	session_spirit_stones += amount
 
 
 ## Appelé quand un objet (typiquement un QiOrb) entre dans le rayon d'attraction.
