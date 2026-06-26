@@ -14,3 +14,5 @@ extends Resource
 @export var contact_damage: float = 5.0
 ## Quantité d'essence de Qi libérée à la mort (récompense de cultivation).
 @export var qi_reward: float = 1.0
+## Pierres d'Esprit (monnaie de méta-progression) accordées à la mort.
+@export var spirit_stone_reward: int = 1

@@ -73,7 +73,15 @@ func take_damage(amount: float) -> void:
 
 func _die() -> void:
 	_drop_qi_orb()
+	_grant_spirit_stones()
 	despawn()
+
+
+## Crédite directement le joueur en Pierres d'Esprit (monnaie de méta-
+## progression), contrairement au Qi qui passe par un QiOrb ramassable.
+func _grant_spirit_stones() -> void:
+	if is_instance_valid(_player) and _player.has_method("earn_spirit_stones"):
+		_player.earn_spirit_stones(stats.spirit_stone_reward)
 
 
 ## Renvoie cet ennemi dans le pool de ObjectPooler au lieu de le détruire.
