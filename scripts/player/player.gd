@@ -25,6 +25,9 @@ extends CharacterBody2D
 
 
 func _ready() -> void:
+	# Permet aux ennemis de retrouver le joueur via get_first_node_in_group(),
+	# sans dépendance directe ni recherche par chemin de scène.
+	add_to_group("player")
 	_update_pickup_radius()
 
 
