@@ -12,14 +12,30 @@ extends Area2D
 ## SceneTreeTimer à usage unique, pour pouvoir relancer le compte à rebours
 ## à chaque réactivation sans fuite ni signal fantôme d'une vie précédente.
 
+## Chemin par défaut où déposer votre image de vague de Qi (fond noir, mode
+## additif). Chargée automatiquement si `texture` n'est pas déjà assignée
+## dans l'inspecteur. ResourceLoader.exists() évite toute erreur si le
+## fichier n'existe pas encore (contrairement à preload()).
+const DEFAULT_TEXTURE_PATH := "res://assets/vfx/qi_strike_wave.png"
+## Nombre de points conservés dans la traînée lumineuse (fenêtre glissante).
+## Plus élevé = traînée plus longue, mais plus coûteux à dessiner.
+const TRAIL_MAX_POINTS := 10
+
+## Image du projectile. Laisser vide pour utiliser DEFAULT_TEXTURE_PATH.
+@export var texture: Texture2D:
+	set(value):
+		texture = value
+		if sprite != null and value != null:
+			sprite.texture = value
+
+## VFX d'explosion joué à l'endroit de l'impact (voir QiImpactVFX.gd).
+@export var impact_vfx_scene: PackedScene
+
+@onready var sprite: Sprite2D = $Sprite2D
 @onready var lifetime_timer: Timer = $LifetimeTimer
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var trail_glow: Line2D = $TrailGlow
 @onready var trail_core: Line2D = $TrailCore
-
-## Nombre de points conservés dans la traînée lumineuse (fenêtre glissante).
-## Plus élevé = traînée plus longue, mais plus coûteux à dessiner.
-const TRAIL_MAX_POINTS := 10
 
 var _direction: Vector2 = Vector2.RIGHT
 var _speed: float = 0.0
@@ -28,6 +44,11 @@ var _connected_signals: bool = false
 
 
 func _ready() -> void:
+	if texture == null and ResourceLoader.exists(DEFAULT_TEXTURE_PATH):
+		texture = load(DEFAULT_TEXTURE_PATH)
+	elif texture != null:
+		sprite.texture = texture
+
 	_connect_signals_once()
 
 
@@ -102,4 +123,5 @@ func despawn() -> void:
 func _on_body_entered(body: Node) -> void:
 	if body.has_method("take_damage"):
 		body.take_damage(_damage)
+	QiImpactVFX.spawn(impact_vfx_scene, get_tree().current_scene, global_position)
 	despawn()
