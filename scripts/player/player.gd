@@ -16,6 +16,8 @@ signal health_changed(current: float, max_value: float)
 signal qi_changed(current: float, max_value: float)
 ## Émis quand le Royaume de Cultivation change, après une percée.
 signal realm_changed(realm_name: String)
+## Émis une seule fois quand les PV tombent à zéro (fin de la run).
+signal died
 
 @export_group("Mouvement")
 ## Vitesse de déplacement maximale, en pixels/seconde.
@@ -32,6 +34,8 @@ signal realm_changed(realm_name: String)
 ## Référence à la zone de ramassage, dont le rayon suit `stats.pickup_radius`.
 @onready var pickup_area: Area2D = $PickupArea
 @onready var pickup_shape: CollisionShape2D = $PickupArea/CollisionShape2D
+
+var _is_dead: bool = false
 
 
 func _ready() -> void:
@@ -68,11 +72,22 @@ func add_qi(amount: float) -> void:
 		realm_changed.emit(stats.get_realm_name())
 		breakthrough_reached.emit()
 
+		SaveManager.record_realm_reached(stats.current_realm_index)
+		if stats.get_realm_name() == "Fondation du Qi":
+			SteamManager.unlock_achievement("PREMIERE_PERCEE")
+
 
 ## Appelé par la zone de contact d'un ennemi (voir Enemy._on_hurtbox_area_entered).
 func take_damage_from_enemy(amount: float) -> void:
+	if _is_dead:
+		return
+
 	stats.take_damage(amount)
 	health_changed.emit(stats.health, stats.max_health)
+
+	if not stats.is_alive():
+		_is_dead = true
+		died.emit()
 
 
 ## Appelé quand un objet (typiquement un QiOrb) entre dans le rayon d'attraction.
