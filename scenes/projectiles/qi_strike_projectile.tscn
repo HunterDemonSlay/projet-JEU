@@ -19,3 +19,6 @@ texture = SubResource("PlaceholderTexture2D_sprite")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_body")
+
+[node name="LifetimeTimer" type="Timer" parent="."]
+one_shot = true

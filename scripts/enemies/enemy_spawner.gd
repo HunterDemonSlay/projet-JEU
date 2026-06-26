@@ -23,7 +23,6 @@ extends Node2D
 ## Cache de la référence au joueur, résolue une seule fois.
 var _player: Node2D
 var _spawn_timer: Timer
-var _active_enemy_count: int = 0
 
 
 func _ready() -> void:
@@ -37,23 +36,34 @@ func _ready() -> void:
 
 
 func _on_spawn_timer_timeout() -> void:
-	if _active_enemy_count >= max_active_enemies:
-		return
 	if not is_instance_valid(_player) or enemy_scene == null:
+		return
+	if _count_active_enemies() >= max_active_enemies:
 		return
 
 	for _i in enemies_per_wave:
 		_spawn_one_enemy()
 
 
-## Instancie un ennemi à une position aléatoire sur le cercle juste hors
-## du champ de vision de la caméra du joueur.
+## Recycle un ennemi inactif du pool (ou en instancie un nouveau si le pool
+## est vide) et le repositionne hors champ de caméra. Remplace l'ancien
+## couple instantiate()/queue_free() pour éviter le coût de
+## création/destruction répétée de centaines d'ennemis.
 func _spawn_one_enemy() -> void:
-	var enemy := enemy_scene.instantiate()
-	get_tree().current_scene.add_child(enemy)
+	var enemy := ObjectPooler.acquire(enemy_scene, get_tree().current_scene)
 	enemy.global_position = _get_random_position_outside_view()
-	_active_enemy_count += 1
-	enemy.tree_exited.connect(func() -> void: _active_enemy_count -= 1)
+
+
+## Compte les ennemis actuellement actifs (visibles), qu'ils viennent d'être
+## instanciés ou recyclés depuis le pool. Les ennemis "morts" restent dans
+## l'arbre de scène (cachés, en attente de recyclage) : on ne peut donc plus
+## se fier à tree_exited pour les compter, contrairement à avant le pooling.
+func _count_active_enemies() -> int:
+	var count := 0
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if enemy.visible:
+			count += 1
+	return count
 
 
 ## Calcule un point aléatoire sur un cercle centré sur le joueur, dont le

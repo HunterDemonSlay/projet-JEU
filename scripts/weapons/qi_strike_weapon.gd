@@ -17,8 +17,9 @@ func _perform_attack(target: Node2D) -> void:
 		return
 
 	var direction := (target.global_position - global_position).normalized()
-	var projectile := projectile_scene.instantiate() as Projectile
+	# Recycle un projectile inactif du pool au lieu d'instancier/détruire à
+	# chaque tir (voir ObjectPooler.gd) ; même API qu'auparavant ensuite.
+	var projectile := ObjectPooler.acquire(projectile_scene, get_tree().current_scene) as Projectile
 
-	get_tree().current_scene.add_child(projectile)
 	projectile.global_position = global_position
 	projectile.launch(direction, damage, projectile_speed, projectile_lifetime)

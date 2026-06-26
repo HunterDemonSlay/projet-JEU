@@ -14,20 +14,45 @@ extends CharacterBody2D
 @export var qi_orb_scene: PackedScene
 
 @onready var hurtbox: Area2D = $Hurtbox
+@onready var collision_shape: CollisionShape2D = $CollisionShape2D
 
 var current_health: float
-## Cache de la référence au joueur, résolue une seule fois (voir _ready).
-## Évite un appel get_tree().get_first_node_in_group() à chaque frame.
+## Cache de la référence au joueur, résolue une seule fois (voir _ready /
+## on_pool_activate). Évite un appel get_tree().get_first_node_in_group()
+## à chaque frame.
 var _player: Node2D
+var _hurtbox_connected: bool = false
 
 
 func _ready() -> void:
-	current_health = stats.max_health
-	_player = get_tree().get_first_node_in_group("player")
-	hurtbox.area_entered.connect(_on_hurtbox_area_entered)
 	# Permet aux armes (WeaponBase) de trouver l'ennemi le plus proche
 	# sans avoir à parcourir tous les nœuds de la scène.
 	add_to_group("enemies")
+	on_pool_activate()
+
+
+## Appelée par ObjectPooler quand cette instance est réutilisée : remet
+## l'ennemi dans un état "neuf" (vie pleine, collisions actives, cible à jour).
+func on_pool_activate() -> void:
+	current_health = stats.max_health
+	velocity = Vector2.ZERO
+	_player = get_tree().get_first_node_in_group("player")
+	hurtbox.monitoring = true
+	collision_shape.disabled = false
+
+	# Le signal ne doit être connecté qu'une fois par instance, pas à
+	# chaque réactivation (sinon il se déclencherait plusieurs fois).
+	if not _hurtbox_connected:
+		hurtbox.area_entered.connect(_on_hurtbox_area_entered)
+		_hurtbox_connected = true
+
+
+## Appelée par ObjectPooler quand cette instance retourne au pool : coupe
+## tout ce qui pourrait continuer à interagir avec la scène une fois cachée.
+func on_pool_deactivate() -> void:
+	velocity = Vector2.ZERO
+	hurtbox.monitoring = false
+	collision_shape.disabled = true
 
 
 func _physics_process(_delta: float) -> void:
@@ -48,7 +73,16 @@ func take_damage(amount: float) -> void:
 
 func _die() -> void:
 	_drop_qi_orb()
-	queue_free()
+	despawn()
+
+
+## Renvoie cet ennemi dans le pool de ObjectPooler au lieu de le détruire.
+## Différé via call_deferred : _die() est appelée depuis le callback de
+## collision d'un projectile (en pleine étape physique), et désactiver les
+## collisions (on_pool_deactivate) à ce moment précis lève une erreur Godot
+## ("flushing queries"), comme déjà rencontré avec _drop_qi_orb().
+func despawn() -> void:
+	ObjectPooler.call_deferred("release", self)
 
 
 ## Instancie un QiOrb à la position de l'ennemi, avec la récompense définie
