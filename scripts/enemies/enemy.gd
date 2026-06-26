@@ -23,6 +23,9 @@ func _ready() -> void:
 	current_health = stats.max_health
 	_player = get_tree().get_first_node_in_group("player")
 	hurtbox.area_entered.connect(_on_hurtbox_area_entered)
+	# Permet aux armes (WeaponBase) de trouver l'ennemi le plus proche
+	# sans avoir à parcourir tous les nœuds de la scène.
+	add_to_group("enemies")
 
 
 func _physics_process(_delta: float) -> void:
