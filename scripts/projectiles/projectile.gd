@@ -14,6 +14,12 @@ extends Area2D
 
 @onready var lifetime_timer: Timer = $LifetimeTimer
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
+@onready var trail_glow: Line2D = $TrailGlow
+@onready var trail_core: Line2D = $TrailCore
+
+## Nombre de points conservés dans la traînée lumineuse (fenêtre glissante).
+## Plus élevé = traînée plus longue, mais plus coûteux à dessiner.
+const TRAIL_MAX_POINTS := 10
 
 var _direction: Vector2 = Vector2.RIGHT
 var _speed: float = 0.0
@@ -32,11 +38,33 @@ func launch(direction: Vector2, damage: float, speed: float, lifetime: float) ->
 	_speed = speed
 	rotation = _direction.angle()
 
+	_reset_trail()
 	lifetime_timer.start(lifetime)
 
 
 func _physics_process(delta: float) -> void:
 	global_position += _direction * _speed * delta
+	_update_trail()
+
+
+## Ajoute la position actuelle à la traînée (TrailGlow/TrailCore sont en
+## `top_level = true`, donc leurs points sont déjà en coordonnées globales
+## malgré leur parenté avec ce projectile qui se déplace). Fenêtre glissante :
+## on retire le point le plus ancien dès que la limite est dépassée, pour
+## garder une traînée de longueur constante quelle que soit la distance
+## parcourue par le projectile.
+func _update_trail() -> void:
+	trail_glow.add_point(global_position)
+	trail_core.add_point(global_position)
+
+	if trail_glow.get_point_count() > TRAIL_MAX_POINTS:
+		trail_glow.remove_point(0)
+		trail_core.remove_point(0)
+
+
+func _reset_trail() -> void:
+	trail_glow.clear_points()
+	trail_core.clear_points()
 
 
 ## Appelée par ObjectPooler quand cette instance est réutilisée.
@@ -51,6 +79,7 @@ func on_pool_deactivate() -> void:
 	monitoring = false
 	collision_shape.disabled = true
 	lifetime_timer.stop()
+	_reset_trail()
 
 
 func _connect_signals_once() -> void:

@@ -35,6 +35,12 @@ signal died
 @onready var pickup_area: Area2D = $PickupArea
 @onready var pickup_shape: CollisionShape2D = $PickupArea/CollisionShape2D
 @onready var hurtbox: Area2D = $Hurtbox
+## Pétales de fleurs de prunier qui se détachent du personnage en mouvement
+## (esthétique manhwa). Purement visuel : aucune incidence sur le gameplay.
+@onready var plum_blossom_particles: GPUParticles2D = $PlumBlossomParticles
+
+## Vitesse minimale (px/s) à partir de laquelle les pétales se détachent.
+const PETAL_EMIT_SPEED_THRESHOLD := 10.0
 
 ## Pierres d'Esprit accumulées pendant cette run (non encore persistées).
 ## Voir World._on_player_died(), qui les crédite à SaveManager à la mort.
@@ -64,6 +70,8 @@ func _physics_process(delta: float) -> void:
 	var input_direction := _get_input_direction()
 	velocity = _compute_velocity(velocity, input_direction, delta)
 	move_and_slide()
+
+	plum_blossom_particles.emitting = velocity.length() > PETAL_EMIT_SPEED_THRESHOLD
 
 
 ## Ajoute du Qi et déclenche une percée (breakthrough) si le maximum est atteint.

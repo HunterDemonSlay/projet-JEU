@@ -1,0 +1,50 @@
+extends AnimationPlayer
+## Pilote les transitions entre les états d'animation du joueur : Idle, Run
+## (cheveux/robe qui volent), et QiStrike_Cast (attaque, non interruptible).
+##
+## Les clips n'existent pas encore (le personnage n'a qu'un sprite
+## placeholder) : chaque appel à play() est protégé par has_animation(), donc
+## ce script ne provoque aucune erreur tant que l'art définitif n'est pas
+## prêt, et fonctionnera tel quel dès que les animations "Idle"/"Run"/
+## "QiStrike_Cast" seront ajoutées à l'AnimationPlayer.
+
+const ANIM_IDLE := "Idle"
+const ANIM_RUN := "Run"
+const ANIM_ATTACK := "QiStrike_Cast"
+
+## Vitesse minimale (px/s) à partir de laquelle on bascule sur "Run".
+const RUN_SPEED_THRESHOLD := 10.0
+
+@onready var _player: Player = get_parent()
+@onready var _weapon: WeaponBase = get_parent().get_node("WeaponPivot")
+
+## Empêche le mouvement (Idle/Run) d'interrompre une attaque en cours :
+## la priorité va toujours à l'animation de cast tant qu'elle joue.
+var _is_casting: bool = false
+
+
+func _ready() -> void:
+	animation_finished.connect(_on_animation_finished)
+	_weapon.attack_performed.connect(_on_attack_performed)
+
+
+func _process(_delta: float) -> void:
+	if _is_casting:
+		return
+
+	var target_animation := ANIM_RUN if _player.velocity.length() > RUN_SPEED_THRESHOLD else ANIM_IDLE
+	if has_animation(target_animation) and current_animation != target_animation:
+		play(target_animation)
+
+
+func _on_attack_performed() -> void:
+	if not has_animation(ANIM_ATTACK):
+		return
+	_is_casting = true
+	play(ANIM_ATTACK)
+
+
+## Rend la main au cycle Idle/Run dès que l'animation d'attaque se termine.
+func _on_animation_finished(finished_animation: StringName) -> void:
+	if finished_animation == ANIM_ATTACK:
+		_is_casting = false

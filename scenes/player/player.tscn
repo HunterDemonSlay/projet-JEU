@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/player/player_animator.gd" id="4"]
 [ext_resource type="Script" path="res://scripts/weapons/qi_strike_weapon.gd" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/projectiles/qi_strike_projectile.tscn" id="3"]
 
@@ -12,6 +13,30 @@ radius = 48.0
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_sprite"]
 size = Vector2(32, 32)
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_petal"]
+size = Vector2(6, 6)
+
+[sub_resource type="Gradient" id="Gradient_petal_color"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(1, 0.75, 0.85, 1, 1, 0.55, 0.7, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_petal_color"]
+gradient = SubResource("Gradient_petal_color")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_petal"]
+direction = Vector3(-1, -0.3, 0)
+spread = 35.0
+initial_velocity_min = 18.0
+initial_velocity_max = 42.0
+gravity = Vector3(0, 55, 0)
+angular_velocity_min = -90.0
+angular_velocity_max = 90.0
+scale_min = 0.6
+scale_max = 1.4
+color_ramp = SubResource("GradientTexture1D_petal_color")
+emission_shape = 1
+emission_sphere_radius = 10.0
 
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1")
@@ -41,3 +66,16 @@ collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
 shape = SubResource("CircleShape2D_body")
+
+[node name="PlumBlossomParticles" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 24
+lifetime = 1.4
+explosiveness = 0.0
+randomness = 0.3
+local_coords = false
+texture = SubResource("PlaceholderTexture2D_petal")
+process_material = SubResource("ParticleProcessMaterial_petal")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+script = ExtResource("4")

@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/projectiles/projectile.gd" id="1"]
+[ext_resource type="Shader" path="res://scripts/projectiles/trail_glow.gdshader" id="2"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
 radius = 4.0
@@ -8,6 +9,18 @@ height = 16.0
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_sprite"]
 size = Vector2(8, 20)
+
+[sub_resource type="Gradient" id="Gradient_trail_glow"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(1, 0.4, 0.65, 0, 1, 0.85, 0.95, 0.9)
+
+[sub_resource type="Gradient" id="Gradient_trail_core"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_trail_glow"]
+shader = ExtResource("2")
+shader_parameter/intensity = 2.5
 
 [node name="QiStrikeProjectile" type="Area2D"]
 collision_layer = 0
@@ -22,3 +35,14 @@ shape = SubResource("CapsuleShape2D_body")
 
 [node name="LifetimeTimer" type="Timer" parent="."]
 one_shot = true
+
+[node name="TrailGlow" type="Line2D" parent="."]
+top_level = true
+width = 14.0
+gradient = SubResource("Gradient_trail_glow")
+material = SubResource("ShaderMaterial_trail_glow")
+
+[node name="TrailCore" type="Line2D" parent="."]
+top_level = true
+width = 4.0
+gradient = SubResource("Gradient_trail_core")
