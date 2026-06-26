@@ -1,7 +1,9 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/projectiles/projectile.gd" id="1"]
 [ext_resource type="Shader" path="res://scripts/projectiles/trail_glow.gdshader" id="2"]
+[ext_resource type="Shader" path="res://scripts/vfx/additive_glow.gdshader" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/vfx/qi_impact_vfx.tscn" id="4"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
 radius = 4.0
@@ -22,12 +24,18 @@ colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1)
 shader = ExtResource("2")
 shader_parameter/intensity = 2.5
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wave_glow"]
+shader = ExtResource("3")
+shader_parameter/intensity = 1.8
+
 [node name="QiStrikeProjectile" type="Area2D"]
 collision_layer = 0
 collision_mask = 2
 script = ExtResource("1")
+impact_vfx_scene = ExtResource("4")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_wave_glow")
 texture = SubResource("PlaceholderTexture2D_sprite")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

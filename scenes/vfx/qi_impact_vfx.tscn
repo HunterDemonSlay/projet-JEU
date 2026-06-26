@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/vfx/qi_impact_vfx.gd" id="1"]
+[ext_resource type="Shader" path="res://scripts/vfx/additive_glow.gdshader" id="2"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_impact_glow"]
+shader = ExtResource("2")
+shader_parameter/intensity = 2.0
+
+[node name="QiImpactVFX" type="Sprite2D"]
+material = SubResource("ShaderMaterial_impact_glow")
+script = ExtResource("1")

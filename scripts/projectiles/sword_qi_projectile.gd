@@ -9,14 +9,29 @@ extends Area2D
 ## on_pool_deactivate() remettent l'état à neuf, despawn() la renvoie au pool
 ## au lieu de la détruire.
 
-## Image de la vague d'énergie, assignable directement dans l'inspecteur.
+## Chemin par défaut où déposer votre image de vague de Qi (fond noir, mode
+## additif). Chargée automatiquement si `texture` n'est pas déjà assignée
+## dans l'inspecteur — voir _ready(). ResourceLoader.exists() évite toute
+## erreur si le fichier n'existe pas encore (contrairement à preload(), qui
+## empêcherait le projet entier de s'ouvrir tant que le fichier est absent).
+const DEFAULT_TEXTURE_PATH := "res://assets/vfx/qi_strike_wave.png"
+
+## Image de la vague d'énergie. Peut être assignée directement dans
+## l'inspecteur, ou laissée vide pour utiliser DEFAULT_TEXTURE_PATH.
 @export var texture: Texture2D:
 	set(value):
 		texture = value
-		if sprite != null:
+		if sprite != null and value != null:
 			sprite.texture = value
 
-## Durée du fondu (en secondes) avant le retour au pool, à l'impact ou en fin de vie.
+## Si la texture source ne pointe pas naturellement vers la droite (+X),
+## corrige l'angle ici (en degrés) pour aligner son "avant" avec _direction.
+@export var sprite_forward_offset_deg: float = 0.0
+
+## VFX d'explosion joué à l'endroit de l'impact (voir QiImpactVFX.gd).
+@export var impact_vfx_scene: PackedScene
+
+## Durée du fondu + rétrécissement avant le retour au pool, à l'impact ou en fin de vie.
 @export var fade_out_duration: float = 0.25
 
 @onready var sprite: Sprite2D = $Sprite2D
@@ -28,21 +43,36 @@ var _speed: float = 0.0
 var _damage: float = 0.0
 var _is_fading: bool = false
 var _connected_signals: bool = false
+var _fade_tween: Tween
 
 
 func _ready() -> void:
-	if texture != null:
+	if texture == null and ResourceLoader.exists(DEFAULT_TEXTURE_PATH):
+		texture = load(DEFAULT_TEXTURE_PATH)
+	elif texture != null:
 		sprite.texture = texture
+
 	_connect_signals_once()
 
 
 ## Oriente la vague vers l'ennemi le plus proche puis l'active.
 ## À appeler juste après ObjectPooler.acquire().
 func fire(damage: float, speed: float, lifetime: float) -> void:
+	# Une instance recyclée peut encore avoir un Tween de mort en cours
+	# (cas limite : réutilisée juste après son fondu précédent) ; le tuer
+	# avant de réinitialiser scale/modulate évite qu'il n'écrase nos valeurs
+	# une frame plus tard.
+	if _fade_tween != null and _fade_tween.is_valid():
+		_fade_tween.kill()
+
 	_damage = damage
 	_speed = speed
+	_is_fading = false
+	scale = Vector2.ONE
+	modulate.a = 1.0
+
 	_direction = _find_direction_to_nearest_enemy()
-	rotation = _direction.angle()
+	rotation = _direction.angle() + deg_to_rad(sprite_forward_offset_deg)
 
 	lifetime_timer.start(lifetime)
 
@@ -78,6 +108,7 @@ func _find_direction_to_nearest_enemy() -> Vector2:
 func on_pool_activate() -> void:
 	monitoring = true
 	collision_shape.disabled = false
+	scale = Vector2.ONE
 	modulate.a = 1.0
 	_is_fading = false
 	_connect_signals_once()
@@ -103,6 +134,7 @@ func _on_body_entered(body: Node) -> void:
 		return
 	if body.has_method("take_damage"):
 		body.take_damage(_damage)
+	QiImpactVFX.spawn(impact_vfx_scene, get_tree().current_scene, global_position)
 	_start_fade_out()
 
 
@@ -110,7 +142,8 @@ func _on_lifetime_expired() -> void:
 	_start_fade_out()
 
 
-## Fondu via Tween avant de retourner au pool, plutôt qu'une disparition nette.
+## Dissipation : rétrécissement + fondu simultanés via un Tween, plutôt
+## qu'une disparition nette, puis retour au pool.
 ## monitoring est coupé en différé (set_deferred) : _start_fade_out() peut être
 ## appelée depuis _on_body_entered, donc en pleine étape physique, où changer
 ## directement l'état de collision lève une erreur Godot ("flushing queries"),
@@ -121,9 +154,11 @@ func _start_fade_out() -> void:
 	_is_fading = true
 	set_deferred("monitoring", false)
 
-	var fade_tween := create_tween()
-	fade_tween.tween_property(self, "modulate:a", 0.0, fade_out_duration)
-	fade_tween.finished.connect(despawn)
+	_fade_tween = create_tween()
+	_fade_tween.set_parallel(true)
+	_fade_tween.tween_property(self, "scale", Vector2.ZERO, fade_out_duration)
+	_fade_tween.tween_property(self, "modulate:a", 0.0, fade_out_duration)
+	_fade_tween.finished.connect(despawn)
 
 
 func despawn() -> void:
