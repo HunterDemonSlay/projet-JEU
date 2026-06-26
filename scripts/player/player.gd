@@ -43,7 +43,7 @@ signal died
 
 ## Chemin de l'illustration HD unique. Chargée automatiquement si présente ;
 ## sinon le PlaceholderTexture2D de la scène reste affiché (aucune erreur).
-const PLAYER_SPRITE_PATH := "res://assets/player/player_sprite.jpg"
+const PLAYER_SPRITE_PATH := "res://assets/player/player_sprite.png"
 
 ## Référence à la zone de ramassage, dont le rayon suit `stats.pickup_radius`.
 @onready var pickup_area: Area2D = $PickupArea
