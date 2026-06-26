@@ -23,6 +23,9 @@ extends Resource
 ## Rayon d'attraction des objets au sol (essences de Qi, butin...).
 @export var pickup_radius: float = 48.0
 
+## Régénération passive de Qi, en points par seconde.
+@export var qi_regen_rate: float = 0.0
+
 
 func is_alive() -> bool:
 	return health > 0.0

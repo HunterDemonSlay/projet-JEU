@@ -10,6 +10,8 @@ extends CharacterBody2D
 ## Statistiques de cet ennemi (HP, vitesse, dégâts). Assigner une Resource
 ## .tres différente par archétype pour varier les ennemis sans dupliquer le script.
 @export var stats: EnemyStats = EnemyStats.new()
+## Scène de l'orbe de Qi déposée à la mort (voir QiOrb.gd).
+@export var qi_orb_scene: PackedScene
 
 @onready var hurtbox: Area2D = $Hurtbox
 
@@ -45,8 +47,20 @@ func take_damage(amount: float) -> void:
 
 
 func _die() -> void:
-	# TODO Étape 3 : spawn d'un pickup d'essence de Qi (stats.qi_reward) ici.
+	_drop_qi_orb()
 	queue_free()
+
+
+## Instancie un QiOrb à la position de l'ennemi, avec la récompense définie
+## dans ses stats (stats.qi_reward).
+func _drop_qi_orb() -> void:
+	if qi_orb_scene == null:
+		return
+
+	var orb := qi_orb_scene.instantiate() as QiOrb
+	get_tree().current_scene.add_child(orb)
+	orb.global_position = global_position
+	orb.qi_value = stats.qi_reward
 
 
 ## Inflige les dégâts de contact à toute zone du joueur entrant dans la hurtbox.
