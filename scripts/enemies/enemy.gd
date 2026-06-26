@@ -53,14 +53,18 @@ func _die() -> void:
 
 ## Instancie un QiOrb à la position de l'ennemi, avec la récompense définie
 ## dans ses stats (stats.qi_reward).
+## _die() est appelée depuis le callback de collision d'un projectile
+## (en pleine étape physique) : ajouter l'orbe à la scène doit donc être
+## différé via call_deferred, sinon Godot refuse de modifier l'état physique
+## ("flushing queries") et lève une erreur au runtime.
 func _drop_qi_orb() -> void:
 	if qi_orb_scene == null:
 		return
 
 	var orb := qi_orb_scene.instantiate() as QiOrb
-	get_tree().current_scene.add_child(orb)
 	orb.global_position = global_position
 	orb.qi_value = stats.qi_reward
+	get_tree().current_scene.call_deferred("add_child", orb)
 
 
 ## Inflige les dégâts de contact à toute zone du joueur entrant dans la hurtbox.

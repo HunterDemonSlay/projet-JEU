@@ -1,6 +1,9 @@
-class_name CultivationManager
 extends Node
-## Autoload singleton : gère la boucle de percée (Breakthrough) de Cultivation.
+## Autoload singleton (nom déclaré dans project.godot : "CultivationManager").
+## Pas de class_name ici : il entrerait en conflit avec le nom de l'autoload,
+## qui est déjà la façon dont ce singleton est accessible globalement.
+##
+## Gère la boucle de percée (Breakthrough) de Cultivation.
 ##
 ## Écoute `Player.breakthrough_reached` (émis quand le Qi atteint son
 ## maximum). À ce moment : met le jeu en pause, tire 3 améliorations

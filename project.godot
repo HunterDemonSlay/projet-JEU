@@ -9,6 +9,7 @@ config_version=5
 config/name="Murim Cultivation"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon=""
+run/main_scene="res://scenes/world.tscn"
 
 [input]
 
