@@ -10,6 +10,12 @@ extends CharacterBody2D
 ## Émis quand le Qi atteint son maximum : déclenche une percée de Cultivation
 ## (écouté par CultivationManager pour proposer un choix d'amélioration).
 signal breakthrough_reached
+## Émis à chaque variation de vie. Écouté par le HUD (lecture seule).
+signal health_changed(current: float, max_value: float)
+## Émis à chaque variation de Qi. Écouté par le HUD (lecture seule).
+signal qi_changed(current: float, max_value: float)
+## Émis quand le Royaume de Cultivation change, après une percée.
+signal realm_changed(realm_name: String)
 
 @export_group("Mouvement")
 ## Vitesse de déplacement maximale, en pixels/seconde.
@@ -52,10 +58,21 @@ func _physics_process(delta: float) -> void:
 ## qui ralentit naturellement (comme la montée en Royaume dans le Murim).
 func add_qi(amount: float) -> void:
 	stats.restore_qi(amount)
+	qi_changed.emit(stats.qi, stats.max_qi)
+
 	if stats.qi >= stats.max_qi:
 		stats.qi = 0.0
 		stats.max_qi *= 1.2
+		stats.current_realm_index += 1
+		qi_changed.emit(stats.qi, stats.max_qi)
+		realm_changed.emit(stats.get_realm_name())
 		breakthrough_reached.emit()
+
+
+## Appelé par la zone de contact d'un ennemi (voir Enemy._on_hurtbox_area_entered).
+func take_damage_from_enemy(amount: float) -> void:
+	stats.take_damage(amount)
+	health_changed.emit(stats.health, stats.max_health)
 
 
 ## Appelé quand un objet (typiquement un QiOrb) entre dans le rayon d'attraction.
