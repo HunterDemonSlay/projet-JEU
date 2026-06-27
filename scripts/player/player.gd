@@ -33,9 +33,14 @@ signal died
 
 @export_group("Habillage")
 ## Position du Marker2D SwordTip (pointe d'épée pour la traînée de combat),
-## relative à PlayerSprite. Ajustable au pixel près depuis l'inspecteur sans
-## toucher au code, tant qu'on n'édite pas la scène dans l'éditeur visuel.
-@export var sword_tip_offset: Vector2 = Vector2(100, -50):
+## relative à PlayerSprite — donc exprimée dans l'espace LOCAL non mis à
+## l'échelle de l'illustration (832x1216 px), pas dans l'espace écran final.
+## PlayerSprite.scale (0.15) réduit automatiquement cette valeur au moment du
+## rendu : pour suivre le visuel rétréci, cet offset doit donc rester grand
+## (proche de l'échelle réelle de l'image), pas être réduit lui-même.
+## Pointe approximative de la traînée lumineuse sur l'illustration choisie ;
+## à affiner au pixel près depuis l'inspecteur si besoin.
+@export var sword_tip_offset: Vector2 = Vector2(300, 520):
 	set(value):
 		sword_tip_offset = value
 		if sword_tip != null:
