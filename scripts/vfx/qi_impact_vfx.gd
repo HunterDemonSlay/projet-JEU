@@ -18,10 +18,10 @@ const DEFAULT_TEXTURE_PATH := "res://assets/vfx/qi_impact_burst.png"
 ## Durée totale avant autodestruction.
 @export var lifetime: float = 0.3
 ## Échelle de départ (petit, pour l'effet de croissance rapide).
-@export var start_scale: float = 0.05
+@export var start_scale: float = 0.01
 ## Échelle finale. La texture source (qi_impact_burst.png) est une
-## explosion HD pleine taille ; 1.3 la faisait couvrir tout l'écran.
-@export var end_scale: float = 0.3
+## explosion HD pleine taille ; les valeurs plus hautes couvraient tout l'écran.
+@export var end_scale: float = 0.06
 
 
 func _ready() -> void:

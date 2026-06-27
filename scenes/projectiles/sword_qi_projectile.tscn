@@ -18,7 +18,7 @@ script = ExtResource("1")
 impact_vfx_scene = ExtResource("3")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(0.2, 0.2)
+scale = Vector2(0.04, 0.04)
 material = SubResource("ShaderMaterial_wave_glow")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

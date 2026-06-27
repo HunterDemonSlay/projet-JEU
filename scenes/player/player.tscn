@@ -44,7 +44,7 @@ emission_sphere_radius = 10.0
 script = ExtResource("1")
 
 [node name="PlayerSprite" type="Sprite2D" parent="."]
-scale = Vector2(0.15, 0.15)
+scale = Vector2(0.03, 0.03)
 texture = SubResource("PlaceholderTexture2D_player_sprite")
 
 [node name="SwordTip" type="Marker2D" parent="PlayerSprite"]
