@@ -15,6 +15,17 @@ extends CharacterBody2D
 
 @onready var hurtbox: Area2D = $Hurtbox
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
+@onready var sprite: Sprite2D = $Sprite2D
+
+## Nombre de colonnes du spritesheet (knight_walk.png : grille 15x8, une
+## ligne par direction). On n'utilise qu'une seule ligne (vue de côté) avec
+## flip_h pour gauche/droite, plutôt que les 8 directions complètes : un
+## "simple loop" comme demandé, pas un système de direction complet.
+const SPRITE_COLUMNS := 15
+const WALK_ROW := 2
+const WALK_FPS := 12.0
+
+var _walk_anim_time: float = 0.0
 
 var current_health: float
 ## Cache de la référence au joueur, résolue une seule fois (voir _ready /
@@ -55,13 +66,27 @@ func on_pool_deactivate() -> void:
 	collision_shape.disabled = true
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if not is_instance_valid(_player):
 		return
 
 	var direction := (_player.global_position - global_position).normalized()
 	velocity = direction * stats.speed
 	move_and_slide()
+
+	if absf(direction.x) > 0.01:
+		sprite.flip_h = direction.x < 0.0
+	_advance_walk_animation(delta)
+
+
+## Fait défiler les frames de la ligne WALK_ROW du spritesheet, en boucle,
+## sans passer par un AnimationPlayer : plus simple à faire fonctionner de
+## façon fiable pour une seule animation que d'encoder une Resource Animation
+## à la main.
+func _advance_walk_animation(delta: float) -> void:
+	_walk_anim_time += delta
+	var frame_in_row := int(_walk_anim_time * WALK_FPS) % SPRITE_COLUMNS
+	sprite.frame = WALK_ROW * SPRITE_COLUMNS + frame_in_row
 
 
 ## Applique des dégâts et déclenche la mort si les HP tombent à zéro.

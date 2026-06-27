@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/enemies/enemy.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/enemies/enemy_stats.gd" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/pickups/qi_orb.tscn" id="3"]
+[ext_resource type="Texture2D" path="res://assets/enemies/knight_walk.png" id="4"]
 
 [sub_resource type="Resource" id="EnemyStats_default"]
 script = ExtResource("2")
@@ -17,9 +18,6 @@ radius = 14.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_hurtbox"]
 radius = 16.0
 
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_sprite"]
-size = Vector2(28, 28)
-
 [node name="Enemy" type="CharacterBody2D"]
 collision_layer = 2
 collision_mask = 1
@@ -28,7 +26,11 @@ stats = SubResource("EnemyStats_default")
 qi_orb_scene = ExtResource("3")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = SubResource("PlaceholderTexture2D_sprite")
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("4")
+hframes = 15
+vframes = 8
+frame = 30
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_body")

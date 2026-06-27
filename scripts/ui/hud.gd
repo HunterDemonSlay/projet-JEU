@@ -7,8 +7,8 @@ extends CanvasLayer
 ## signaux `health_changed`, `qi_changed` et `realm_changed` émis par
 ## `Player`, ce qui garde l'UI totalement découplée de la logique de jeu.
 
-@onready var health_bar: ProgressBar = $MarginContainer/VBoxContainer/HealthBar
-@onready var qi_bar: ProgressBar = $MarginContainer/VBoxContainer/QiBar
+@onready var health_bar: TextureProgressBar = $MarginContainer/VBoxContainer/HealthBar
+@onready var qi_bar: TextureProgressBar = $MarginContainer/VBoxContainer/QiBar
 @onready var realm_label: Label = $MarginContainer/VBoxContainer/RealmLabel
 
 

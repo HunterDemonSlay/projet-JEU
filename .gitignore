@@ -1,6 +1,12 @@
 # Godot 4 editor cache, régénéré automatiquement à l'ouverture du projet.
 .godot/
 
+# Pack source itch.io brut (75000+ fichiers) : bibliothèque de référence
+# locale, exclue de l'import Godot via assets/raw itch/.gdignore. Seuls les
+# fichiers réellement utilisés sont copiés dans assets/{enemies,ui,decor}/
+# et versionnés normalement.
+assets/raw itch/
+
 # Build exports
 export.cfg
 export_presets.cfg
