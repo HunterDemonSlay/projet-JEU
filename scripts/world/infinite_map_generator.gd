@@ -61,6 +61,10 @@ const OBSTACLE_TEXTURE_PATHS := [
 	"res://assets/decor/props/pine_tree.png",
 	"res://assets/decor/props/round_tree.png",
 	"res://assets/decor/props/rock.png",
+	"res://assets/decor/props/big_tree.png",
+	"res://assets/decor/props/log_pile.png",
+	"res://assets/decor/props/rock_pile.png",
+	"res://assets/decor/props/bush_round.png",
 ]
 
 @onready var ground_layer: TileMapLayer = $GroundTileMapLayer
