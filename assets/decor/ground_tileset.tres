@@ -1,9 +1,15 @@
-[gd_resource type="TileSet" load_steps=7 format=3]
+[gd_resource type="TileSet" load_steps=15 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/decor/ground_grass_tile.png" id="1"]
 [ext_resource type="Texture2D" path="res://assets/decor/ground_dirt_tile.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/decor/ground_water_tile.png" id="3"]
 [ext_resource type="Texture2D" path="res://assets/decor/ground_cliff_tile.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/decor/ground_sand_tile.png" id="5"]
+[ext_resource type="Texture2D" path="res://assets/decor/ground_shallow_water_tile.png" id="6"]
+[ext_resource type="Texture2D" path="res://assets/decor/ground_cliff_top_tile.png" id="7"]
+[ext_resource type="Texture2D" path="res://assets/decor/ground_cliff_shadow_tile.png" id="8"]
+[ext_resource type="Texture2D" path="res://assets/decor/clutter_flower_tile.png" id="9"]
+[ext_resource type="Texture2D" path="res://assets/decor/clutter_pebble_tile.png" id="10"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_grass"]
 texture = ExtResource("1")
@@ -25,9 +31,45 @@ texture = ExtResource("4")
 texture_region_size = Vector2i(16, 16)
 0:0/0 = 0
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sand"]
+texture = ExtResource("5")
+texture_region_size = Vector2i(16, 16)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_shallow_water"]
+texture = ExtResource("6")
+texture_region_size = Vector2i(16, 16)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cliff_top"]
+texture = ExtResource("7")
+texture_region_size = Vector2i(16, 16)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cliff_shadow"]
+texture = ExtResource("8")
+texture_region_size = Vector2i(16, 16)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_flower"]
+texture = ExtResource("9")
+texture_region_size = Vector2i(16, 16)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pebble"]
+texture = ExtResource("10")
+texture_region_size = Vector2i(16, 16)
+0:0/0 = 0
+
 [resource]
 tile_size = Vector2i(16, 16)
 sources/0 = SubResource("TileSetAtlasSource_grass")
 sources/1 = SubResource("TileSetAtlasSource_dirt")
 sources/2 = SubResource("TileSetAtlasSource_water")
 sources/3 = SubResource("TileSetAtlasSource_cliff")
+sources/4 = SubResource("TileSetAtlasSource_sand")
+sources/5 = SubResource("TileSetAtlasSource_shallow_water")
+sources/6 = SubResource("TileSetAtlasSource_cliff_top")
+sources/7 = SubResource("TileSetAtlasSource_cliff_shadow")
+sources/8 = SubResource("TileSetAtlasSource_flower")
+sources/9 = SubResource("TileSetAtlasSource_pebble")
